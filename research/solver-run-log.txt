@@ -1,0 +1,31 @@
+======================================================================
+OEIS NEW -- Minimum connected polyhex with an n-coloring covering every color pair at an edge
+single-formula SAT ascending-k with LRAT-certified lower bounds (n=1..7); rigidity-constrained SAT encoder (n=8,10) with analytic L1/L2 lower bounds (n=9,10)
+======================================================================
+  Software: solve_polyhex.py / solve_polyhex_ext.py / n9_solve.py via sat_utils (CaDiCaL) + analytic bounds
+  Hardware: AMD Ryzen 5 5600 (6-core / 12-thread), 16 GB RAM, Windows 11
+  Date: 2026-05-18
+  NO pre-primed values. All values derived from scratch.
+  Range: 1-10
+  New sequence: no prior-author DATA (live OEIS prefix returns no match).
+  Per-term method recorded in research/solver-results.json (lower_bound_method).
+
+======================================================================
+RESULTS SUMMARY
+======================================================================
+    n   a(n)        Box      Time  Status
+  ---  -----  ---------  --------  ------
+    1      1      1 x 1      0.3s  PROVED
+    2      2      2 x 1      0.0s  PROVED
+    3      3      2 x 2      0.0s  PROVED
+    4      5      2 x 4      0.0s  PROVED
+    5      7      4 x 4      0.1s  PROVED
+    6      9      4 x 4      0.8s  PROVED
+    7     12      4 x 4    504.8s  PROVED
+    8     16      5 x 4   1420.7s  PROVED
+    9     18      6 x 5     53.3s  PROVED
+   10     21      6 x 6      9.0s  PROVED
+
+  Total time: 1989.1s
+
+  a(1)-a(10) proved by this solver
