@@ -145,7 +145,6 @@ python code/verify_method1.py 10
 | `code/solve_polyhex_ext.py` | External-solver streaming variant (LRAT, OS-level timeout) |
 | `code/verify_method1.py` | Independent geometric verifier (disjoint code path, no SAT) |
 | `code/generate-figures.py` | Publication figure generator |
-| `code/generate-animation.py` | Animation generator (witness growth a(1)..a(10)) |
 | `research/solver-results.json` | Machine-readable results: witnesses, colorings, timings |
 | `research/solver-run-log.txt` | Reviewer-grade run log (rendered from solver-results.json) |
 | `research/verify_method1-results.json` | Independent geometric verifier results, n = 1..10 |
