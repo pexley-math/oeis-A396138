@@ -4,8 +4,6 @@ Solver code, data, and figures for [OEIS A396138](https://oeis.org/A396138):
 the minimum number of cells in a connected polyhex that admits a complete
 n-coloring.
 
-![Growing 10-coloring witnesses, a(1) through a(10)](research/oeis-a396138-animation.gif)
-
 ## The Problem
 
 A *polyhex* is a connected, edge-joined set of unit regular hexagons on
@@ -60,15 +58,17 @@ terms.
   proved n except n = 7, so the analytic bounds alone supply the full
   lower bound for n = 8 (L2 = 16), n = 9 (L2 = 18) and n = 10 (L1 = 21)
   -- no SAT certificate is needed for these terms. Both bounds are
-  proved in `research/lower-bounds.md` and independently re-derived by
-  `research/verify_l1_l2.py` (cross-checked against
-  [A001207](https://oeis.org/A001207)).
+  independently re-derived and checked by `research/verify_l1_l2.py`,
+  a self-contained reproducer (it enumerates the relevant polyhexes
+  and reproduces [A001207](https://oeis.org/A001207)); it is the
+  in-repo verification of every lower bound.
 - **Lower-bound certificates (n <= 7):** for the SAT-bound terms the
-  unsatisfiable instance at k = a(n) - 1 is re-solved by an external
-  solver build emitting an LRAT proof, machine-verified by an
-  independent checker (see `research/drat/`). n >= 8 lower bounds are
-  analytic (previous bullet), not SAT, so they carry no LRAT
-  certificate by design.
+  unsatisfiable instance at k = a(n) - 1 was additionally machine-
+  certified by an external LRAT proof; the per-n verdicts, sizes and
+  timings are recorded in `research/drat-certification-summary.json`.
+  The CNF/LRAT proof artifacts themselves are not shipped (regenerable;
+  the n = 7 LRAT alone is ~312 MB). n >= 8 lower bounds are analytic
+  (previous bullet), not SAT, by design.
 - **Rigidity-constrained witness search (n = 8, 9, 10):** with the
   lower bound already fixed analytically, a rigidity lemma at bounded
   edge slack forces the color-class-size multiset and yields a
@@ -109,27 +109,28 @@ terms.
 > repository alone. They import from a private shared-library monorepo
 > that is not published here, and their `sys.path` insertions assume
 > the monorepo layout. The code is shipped as a reference for the
-> method and for diff-style audit against the proof artifacts in
-> `research/`. The lower-bound CNFs in `research/drat/` (one per n =
-> 2..7) are self-contained: the LRAT proofs themselves are not shipped
-> (an LRAT proof is not unique and the n = 7 proof alone is ~312 MB),
-> but any of them regenerates and machine-checks from the shipped CNF
-> in seconds to minutes with stock open-source binaries -- see
-> `research/drat/README.md`. No solver run is required.
+> method and for diff-style audit against the canonical results in
+> `research/`. Independent verification does not need the private
+> libraries or any solver run: `research/n9_solve.py` is a
+> zero-dependency (Python standard library only) oracle that
+> cold-certifies a(1..10), and `research/verify_l1_l2.py` independently
+> re-derives the analytic lower bounds. The external LRAT certification
+> of the n <= 7 lower bounds is recorded in
+> `research/drat-certification-summary.json`; the CNF/LRAT proof
+> artifacts are not shipped (regenerable; the n = 7 LRAT alone is
+> ~312 MB).
 
-**Requirements (for reference only):** Python 3.12+, a PySAT-based SAT
-toolchain with CaDiCaL, plus the private shared libraries above. LRAT
-re-verification needs a standard LRAT checker.
+**Requirements:** Python 3.12+ for the two self-contained verification
+scripts below (standard library only -- no third-party packages). The
+`code/` solver scripts additionally require the private shared-library
+monorepo and are reference-only.
 
 ```bash
-# Re-check a lower bound from this repo alone (example: n = 6,
-# a(6) = 9 proved by UNSAT at k = 8): regenerate the LRAT from the
-# shipped CNF, then machine-check it (needs stock cadical + lrat-check).
-cd research/drat
-cadical --lrat=true n6_k8.cnf n6_k8.lrat
-lrat-check n6_k8.cnf n6_k8.lrat
-# Expected: VERIFIED (refutation; empty clause derived)
-cd ../..
+# Independent verification from this repo alone (no private libraries):
+# 1. cold-certify the values/witnesses a(1..10)
+python research/n9_solve.py
+# 2. re-derive the analytic lower bounds (reproduces A001207)
+python research/verify_l1_l2.py
 
 # Example solver commands (require the private monorepo):
 python code/solve_polyhex.py --n 1-7
@@ -150,11 +151,8 @@ python code/verify_method1.py 10
 | `research/verify_method1-results.json` | Independent geometric verifier results, n = 1..10 |
 | `research/verify_method1-run-log.txt` | Independent geometric verifier run log |
 | `research/n9_solve.py` | Zero-dependency standalone solver/verifier (independent oracle, cold-certifies a(1..10)) |
-| `research/lower-bounds.md` | Proofs of the L1 (edge-isoperimetric) and L2 (per-color) bounds; the only lower-bound proof for n = 8, 9, 10 |
-| `research/verify_l1_l2.py` | Cold re-derivation of L1/L2, cross-checked against A001207 |
-| `research/drat/` | Lower-bound CNFs for n = 2..7 (one per n) plus `drat/README.md` regenerate/verify guide; LRAT proofs are regenerable and not shipped |
-| `research/drat-certification-summary.json` | Per-n lrat-check verdicts, CNF/LRAT sizes, and timings (run-host audit record) |
-| `research/oeis-a396138-animation.gif` | Witness-growth animation (embedded above) |
+| `research/verify_l1_l2.py` | Self-contained re-derivation of the L1/L2 lower bounds, cross-checked against A001207 |
+| `research/drat-certification-summary.json` | External LRAT-certification audit record for the n <= 7 lower bounds (per-n verdicts/sizes/timings; the CNF and LRAT proof artifacts are not shipped) |
 | `submission/oeis-a396138-figures.pdf` | Publication figures |
 | `README.md` | This file |
 | `LICENSE` | CC-BY-4.0 |
